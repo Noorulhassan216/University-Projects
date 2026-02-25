@@ -1,0 +1,508 @@
+Project Title: Design and Implementation of Factory Management System (FMS)
+
+Objective:
+The objective of this lab is to design and implement a Factory Management System using MySQL Workbench. This system manages warehouse operations including departments, employees, machines, maintenance, products, and suppliers using relational database concepts.
+
+Software Required:
+1.MySQL Workbench
+2.Windows OS
+
+Database Description:
+The FMS database consists of 10 tables:
+1.	Warehouse
+2.	Department
+3.	Employee
+4.	Machine
+5.	Maintenance
+6.	Product
+7.	Supplier
+8.	Supplier_product
+9.	Warehouse_product
+10.	Salary_log
+
+Each table contains 5 attributes, including Primary Keys and Foreign Keys to maintain referential integrity.
+
+Task 1: Create Database
+
+CREATE DATABASE FMS;
+USE FMS;
+
+Task 2: Create Tables
+
+CREATE TABLE warehouse (
+    warehouse_id INT PRIMARY KEY,
+    warehouse_name VARCHAR(50),
+    city VARCHAR(30),
+    established_year INT,
+    contact_no VARCHAR(15)
+);
+
+CREATE TABLE department (
+    dept_id INT PRIMARY KEY,
+    dept_name VARCHAR(30),
+    warehouse_id INT,
+    floor_no INT,
+    budget INT,
+    FOREIGN KEY (warehouse_id) REFERENCES warehouse(warehouse_id)
+);	
+
+CREATE TABLE employee (
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(30),
+    salary INT,
+    dept_id INT,
+    manager_id INT,
+    FOREIGN KEY (dept_id) REFERENCES department(dept_id)
+);
+
+CREATE TABLE machine (
+    machine_id INT PRIMARY KEY,
+    machine_name VARCHAR(30),
+    warehouse_id INT,
+    purchase_year INT,
+    status VARCHAR(20),
+    FOREIGN KEY (warehouse_id) REFERENCES warehouse(warehouse_id)
+);
+
+CREATE TABLE maintenance (
+    maintenance_id INT PRIMARY KEY,
+    machine_id INT,
+    emp_id INT,
+    cost INT,
+    maintenance_date DATE,
+    FOREIGN KEY (machine_id) REFERENCES machine(machine_id),
+    FOREIGN KEY (emp_id) REFERENCES employee(emp_id)
+);
+CREATE TABLE product (
+    product_id INT PRIMARY KEY,
+    product_name VARCHAR(30),
+    price INT,
+    category VARCHAR(20),
+    description VARCHAR(50)
+);
+
+CREATE TABLE supplier (
+    supplier_id INT PRIMARY KEY,
+    supplier_name VARCHAR(30),
+    city VARCHAR(30),
+    phone VARCHAR(15),
+    rating INT
+);
+
+CREATE TABLE supplier_product (
+    supplier_id INT,
+    product_id INT,
+    supply_capacity INT,
+    last_delivery DATE,
+    PRIMARY KEY (supplier_id, product_id),
+    FOREIGN KEY (supplier_id) REFERENCES supplier(supplier_id),
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
+);
+
+CREATE TABLE warehouse_product (
+    warehouse_id INT,
+    product_id INT,
+    quantity INT,
+    price INT,
+    last_stock_date DATE,
+    PRIMARY KEY (warehouse_id, product_id),
+    FOREIGN KEY (warehouse_id) REFERENCES warehouse(warehouse_id),
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
+);
+
+CREATE TABLE salary_log (
+    emp_id INT,
+    old_salary INT,
+    new_salary INT,
+    change_date DATE,
+    reason VARCHAR(50)
+);
+
+Task 3: Insert Records
+
+Insert data in each table using INSERT command.
+INSERT INTO warehouse VALUES
+(1,'Alpha','Lahore',2010,'0300-1111111'),
+(2,'Beta','Karachi',2012,'0300-2222222'),
+(3,'Gamma','Islamabad',2015,'0300-3333333'),
+(4,'Delta','Faisalabad',2018,'0300-4444444'),
+(5,'Omega','Multan',2020,'0300-5555555'),
+(6,'Zeta','Peshawar',2016,'0300-6666666');
+
+INSERT INTO department VALUES
+(1,'HR',1,1,200000),
+(2,'Production',1,2,500000),
+(3,'IT',2,3,300000),
+(4,'Maintenance',3,1,250000),
+(5,'Sales',4,2,350000),
+(6,'Quality',5,3,150000);
+
+INSERT INTO employee VALUES
+(1,'Ali',50000,1,NULL),
+(2,'Ahmed',60000,2,1),
+(3,'Sara',55000,3,1),
+(4,'Usman',45000,4,2),
+(5,'Ayesha',65000,5,2),
+(6,'Bilal',48000,6,3);
+
+INSERT INTO machine VALUES
+(1,'Lathe',1,2015,'Working'),
+(2,'Drill',2,2016,'Working'),
+(3,'Cutter',3,2017,'Faulty'),
+(4,'Press',4,2018,'Working'),
+(5,'Welder',5,2019,'Working'),
+(6,'Grinder',6,2020,'Faulty');
+
+INSERT INTO maintenance VALUES
+(1,1,4,5000,'2024-01-10'),
+(2,2,4,3000,'2024-01-15'),
+(3,3,2,7000,'2024-02-01'),
+(4,4,3,4000,'2024-02-10'),
+(5,5,5,6000,'2024-03-01'),
+(6,6,6,8000,'2024-03-05');
+
+INSERT INTO product VALUES
+(1,'Bolt',50,'Hardware','Steel bolt'),
+(2,'Nut',30,'Hardware','Steel nut'),
+(3,'Screw',20,'Hardware','Screw for machinery'),
+(4,'Pipe',200,'Plumbing','Water pipe'),
+(5,'Sheet',500,'Metal','Steel sheet'),
+(6,'Rod',300,'Metal','Iron rod');
+
+INSERT INTO supplier VALUES
+(1,'ABC Traders','Lahore','0311-1111111',5),
+(2,'XYZ Corp','Karachi','0311-2222222',4),
+(3,'Pak Metals','Islamabad','0311-3333333',5),
+(4,'Steel Hub','Faisalabad','0311-4444444',4),
+(5,'Iron World','Multan','0311-5555555',3),
+(6,'Metal Zone','Peshawar','0311-6666666',4);
+
+INSERT INTO supplier_product VALUES
+(1,1,1000,'2024-01-10'),
+(1,2,500,'2024-01-15'),
+(2,1,800,'2024-02-01'),
+(3,3,600,'2024-02-10'),
+(4,4,300,'2024-03-01'),
+(5,5,200,'2024-03-05');
+
+INSERT INTO warehouse_product VALUES
+(1,1,100,50,'2024-01-01'),
+(2,2,200,30,'2024-01-02'),
+(3,3,150,20,'2024-01-03'),
+(4,4,80,200,'2024-01-04'),
+(5,5,60,500,'2024-01-05'),
+(6,6,90,300,'2024-01-06');
+
+INSERT INTO salary_log VALUES
+(1,45000,50000,'2024-01-01','Annual increment'),
+(2,55000,60000,'2024-01-01','Annual increment'),
+(3,50000,55000,'2024-01-01','Annual increment'),
+(4,40000,45000,'2024-01-01','Annual increment'),
+(5,60000,65000,'2024-01-01','Annual increment'),
+(6,43000,48000,'2024-01-01','Annual increment');
+
+Task 4: Joins Implementation
+
+Inner Join:
+SELECT employee.emp_name, department.dept_name 
+FROM employee INNER JOIN department ON employee.dept_id=department.dept_id;
+
+Left Outer Join:
+SELECT warehouse.warehouse_name, department.dept_name 
+FROM warehouse LEFT JOIN department ON warehouse.warehouse_id=department.warehouse_id;
+
+Right Join:
+SELECT employee.emp_name, department.dept_name FROM employee
+RIGHT JOIN department ON employee.dept_id=department.dept_id;
+ 
+FULL OUTER JOIN (UNION workaround):
+SELECT * FROM employee
+LEFT JOIN department  ON employee.dept_id=department.dept_id
+UNION
+SELECT * FROM employee 
+RIGHT JOIN department  ON employee.dept_id=department.dept_id;
+ 
+Natural Join:
+SELECT * FROM employee NATURAL JOIN department;
+ 
+Self Join:
+SELECT e1.emp_name AS Employee, e2.emp_name AS Manager
+FROM employee e1
+JOIN employee e2 ON e1.manager_id = e2.emp_id;
+
+Equi Join:
+SELECT employee.emp_name, department.dept_name 
+FROM employee , department 
+WHERE employee.dept_id=department.dept_id;
+
+Task 5: Group Functions
+MIN:
+SELECT MIN(salary) FROM employee;
+
+MAX:
+SELECT MAX(salary) FROM employee;
+
+AVG:
+SELECT AVG(salary) FROM employee;
+ 
+COUNT:
+SELECT COUNT(emp_id) FROM employee;
+ 
+DISTINCT:
+SELECT DISTINCT city FROM supplier;
+ 
+SUM:
+SELECT SUM(cost) FROM maintenance;
+
+Task 6: GROUP BY + Having Clauses
+
+SELECT dept_id, AVG(salary) FROM employee
+GROUP BY dept_id
+HAVING AVG(salary)>50000;
+
+Task 7: Subqueries (Multiple Row)
+
+SELECT emp_name
+FROM employee
+WHERE dept_id IN (
+    SELECT dept_id FROM department WHERE budget > 250000
+);
+ 
+Task 8: Views
+
+CREATE VIEW employee_view AS
+SELECT emp_name, salary, dept_id FROM employee;
+SELECT * from employee_view;
+Output:
+ 
+Task 9: Indexes
+
+Simple Index:
+CREATE INDEX idx_emp_name ON employee(emp_name);
+	
+Unique Index:
+CREATE UNIQUE INDEX idx_product_name ON product(product_name);
+ 
+Task 10: Functions
+
+Summation Function:
+DELIMITER $$
+CREATE FUNCTION total_cost()
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    RETURN (SELECT SUM(cost) FROM maintenance);
+END$$
+DELIMITER ;
+
+Calling Functions:
+SELECT total_cost();
+
+IF condition:
+DELIMITER $$
+    CREATE FUNCTION salary_check(s INT)
+    RETURNS VARCHAR(20)
+    DETERMINISTIC
+    BEGIN
+        IF s > 50000 THEN
+            RETURN 'High';
+        END IF;
+        RETURN 'Low';
+    END$$
+DELIMITER ;
+Calling Funtion:
+SELECT salary_check(45000);
+
+
+ELSE IF:
+DELIMITER $$
+    CREATE FUNCTION grade_salary(s INT)
+    RETURNS VARCHAR(20)
+    DETERMINISTIC
+    BEGIN
+        IF s > 60000 THEN
+            RETURN 'A';
+        ELSEIF s > 50000 THEN
+            RETURN 'B';
+        ELSE
+            RETURN 'C';
+        END IF;
+    END$$
+DELIMITER ;
+
+Calling Functions:
+SELECT grade_salary(65000);
+
+
+Task 11: Procedures
+Simple Procedure:
+DELIMITER $$
+CREATE PROCEDURE show_employees()
+BEGIN
+    SELECT * FROM employee;
+END$$
+DELIMITER ;
+
+Calling Procedure:
+	CALL show_employees();
+
+IF / ELSEIF / ELSE:
+DELIMITER $$
+CREATE PROCEDURE salary_status(IN s INT)
+BEGIN
+    IF s > 60000 THEN
+        SELECT 'Excellent';
+    ELSEIF s > 50000 THEN
+        SELECT 'Good';
+    ELSE
+        SELECT 'Average';
+    END IF;
+END$$
+DELIMITER
+
+Calling Procedure:
+CALL salary_status(55000);
+
+While Loop with CONCAT:
+
+DELIMITER $$
+CREATE PROCEDURE while_demo()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE result VARCHAR(100) DEFAULT '';
+    WHILE i <= 3 DO
+        SET result = CONCAT(result, i, ' ');
+        SET i = i + 1;
+    END WHILE;
+    SELECT result;
+END$$
+DELIMITER ;
+
+Calling Procedure:
+	CALL while_demo();
+
+Do While Loop:
+
+DELIMITER $$
+CREATE PROCEDURE do_while_demo()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    REPEAT
+        SET i = i + 1;
+    UNTIL i > 5
+    END REPEAT;
+    SELECT i;
+END$$
+DELIMITER ;
+
+Call Procedures:
+CALL do_while_demo();
+
+Task 12: Triggers
+
+Insert Trigger:
+
+DELIMITER $$
+CREATE TRIGGER before_employee_insert
+BEFORE INSERT ON employee
+FOR EACH ROW
+BEGIN
+    SET NEW.salary = IF(NEW.salary < 30000, 30000, NEW.salary);
+END$$
+DELIMITER ;
+
+Update Trigger:
+
+DELIMITER $$
+CREATE TRIGGER after_salary_update
+AFTER UPDATE ON employee
+FOR EACH ROW
+BEGIN
+INSERT INTO salary_log VALUES (OLD.emp_id, OLD.salary, NEW.salary, CURDATE(), 'Salary Updated');
+END$$
+DELIMITER ;
+
+Delete Trigger:
+
+DELIMITER $$
+CREATE TRIGGER before_delete_emp
+BEFORE DELETE ON employee
+FOR EACH ROW
+BEGIN
+INSERT INTO salary_log VALUES (OLD.emp_id, OLD.salary, 0, CURDATE(), 'Employee Deleted');
+END $$
+DELIMITER ;
+
+Task 13: Cursor
+
+Implicit Cursor:
+
+DELIMITER $$
+CREATE PROCEDURE get_emp_details(IN id INT)
+BEGIN
+    DECLARE name_var VARCHAR(30);
+    DECLARE sal_var INT;
+    SELECT emp_name, salary INTO name_var, sal_var 
+    FROM employee 
+    WHERE emp_id = id;
+    SELECT name_var AS 'Employee Name', sal_var AS 'Salary';
+END$$
+DELIMITER ;
+Calling Cursor:
+CALL get_emp_details(5);
+
+Explicit Cursor:
+
+Simple Cursor
+
+DELIMITER $$
+CREATE PROCEDURE fetch_single_employee()
+BEGIN
+    DECLARE e_name VARCHAR(30);
+    DECLARE e_salary INT;
+    DECLARE emp_cursor CURSOR FOR 
+     SELECT emp_name, salary FROM employee;
+    OPEN emp_cursor;
+    FETCH emp_cursor INTO e_name, e_salary;
+    SELECT e_name AS Name, e_salary AS Salary;
+    CLOSE emp_cursor;
+END$$
+DELIMITER ;
+
+
+Calling Cursor:
+
+CALL fetch_single_employee();
+
+Cursor with Loop:
+
+DELIMITER $$
+CREATE PROCEDURE list_employee_salaries()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE emp_name_var VARCHAR(30);
+    DECLARE emp_sal_var INT;
+    DECLARE emp_cursor CURSOR FOR 
+    SELECT emp_name, salary FROM employee;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    OPEN emp_cursor;
+    read_loop: LOOP
+        FETCH emp_cursor INTO emp_name_var, emp_sal_var;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        SELECT CONCAT('Employee: ', emp_name_var, ' | Salary: ', emp_sal_var) AS Info;
+    END LOOP;
+    CLOSE emp_cursor;
+END$$
+DELIMITER ;
+
+Calling Cursor:
+CALL list_employee_salaries();
+
+
+Result:
+The Factory Management System (FMS) database was successfully designed and implemented using MySQL. All required SQL concepts including tables, joins, functions, procedures, views, indexes, triggers and cursors were implemented successfully.
+
+Conclusion:
+This lab helped in understanding relational database design, data integrity, and advanced SQL concepts using a real-world Factory Management System example.
