@@ -1,0 +1,83 @@
+For mounting Drive:
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+For Uploading CSV File:
+
+import pandas as pd
+
+df = pd.read_csv(
+    '/content/drive/MyDrive/netflix_titles.csv',
+    encoding='latin1'
+)
+df.head()
+
+For Importing Libraries:
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+For Data Cleaning:
+
+df.drop_duplicates(inplace=True)
+df['date_added'] = df['date_added'].str.strip()
+df['date_added'] = pd.to_datetime(df['date_added'], format='mixed')
+
+df['year_added'] = df['date_added'].dt.year
+df['month_added'] = df['date_added'].dt.month
+
+df['country'].fillna('Unknown', inplace=True)
+df['rating'].fillna('Not Rated', inplace=True)
+df['cast'].fillna('No Cast Info', inplace=True)
+df['director'].fillna('No Director Info', inplace=True)
+
+For Generating Graphs:
+
+df['duration_num'] = df['duration'].str.extract(r'(\d+)').astype(float)
+df['duration_type'] = df['duration'].str.extract('([a-zA-Z ]+)', expand=False).str.strip()
+sns.countplot(data=df, x='type')
+plt.title('Movies vs TV Shows')
+plt.show()
+
+
+df['rating'].value_counts().head(10).plot(kind='barh', color='orange')
+plt.title('Top Ratings')
+plt.xlabel('Count')
+plt.show()
+
+df['country'].value_counts().head(10).plot(kind='bar', color='green')
+plt.title('Top 10 Countries by Number of Titles')
+plt.ylabel('Count')
+plt.xticks(rotation=45)
+plt.show()
+
+df['year_added'].value_counts().sort_index().plot(kind='line', marker='o')
+plt.title('Content Added per Year')
+plt.ylabel('Number of Titles')
+plt.grid()
+plt.show()
+
+pivot = pd.pivot_table(df, index='year_added', columns='type', aggfunc='size', fill_value=0)
+sns.heatmap(pivot, annot=True, fmt='d', cmap='YlOrRd')
+plt.title('Movies vs TV Shows per Year')
+plt.show()
+all_genres = df['listed_in'].dropna().str.split(', ')
+flat_genres = [g for sublist in all_genres for g in sublist]
+genre_counts = pd.Series(flat_genres).value_counts().head(10)
+
+sns.barplot(y=genre_counts.index, x=genre_counts.values, palette='coolwarm')
+plt.title('Top 10 Genres on Netflix')
+plt.xlabel('Number of Titles')
+plt.ylabel('Genre')
+plt.show()
+
+movie_durations = df[df['type'] == 'Movie']['duration_num'].dropna()
+sns.histplot(movie_durations, bins=30, kde=True)
+plt.title('Distribution of Movie Durations (minutes)')
+plt.xlabel('Duration (minutes)')
+plt.show()
+
+df.to_csv("/content/drive/MyDrive/netflix_cleaned.csv", index=False)
